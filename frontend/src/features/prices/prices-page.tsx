@@ -1,4 +1,4 @@
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Table,
   TableBody,
@@ -6,57 +6,28 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { VehicleClass } from "../orders/types";
+} from '@/components/ui/table';
+import { VehicleClass } from '../orders/types';
+import prices from '../../assets/prices.json';
+import { useEffect, useState } from 'react';
+import { getPrices } from './utils';
 
-const PRICES: Record<VehicleClass, Record<string, Record<string, number>>> = {
-  Luxury: {
-    "Ben Gurion Airport": {
-      Jerusalem: 350,
-      "Tel Aviv": 200,
-      Haifa: 550,
-    },
-    Jerusalem: {
-      "Tel Aviv": 300,
-      Haifa: 650,
-      "Ben Gurion Airport": 350,
-    },
-    "Tel Aviv": {
-      Jerusalem: 300,
-      Haifa: 450,
-      "Ben Gurion Airport": 200,
-    },
-  },
-  Premium: {
-    "Ben Gurion Airport": {
-      Jerusalem: 450,
-      "Tel Aviv": 250,
-      Haifa: 650,
-    },
-    Jerusalem: {
-      "Tel Aviv": 400,
-      Haifa: 750,
-      "Ben Gurion Airport": 450,
-    },
-    "Tel Aviv": {
-      Jerusalem: 400,
-      Haifa: 550,
-      "Ben Gurion Airport": 250,
-    },
-  },
-};
-
-const DESTINATIONS = ["Ben Gurion Airport", "Jerusalem", "Tel Aviv", "Haifa"];
+export type PricesTable = Record<VehicleClass, Record<string, Record<string, number>>>;
+const PRICES: PricesTable = prices;
 
 export default function Prices() {
+  const [tableData, setTableData] = useState([]);
+
+  useEffect(() => {
+    getPrices().then((table) => setTableData(table));
+  }, []);
+
   return (
     <div className="py-12">
       <div className="container mx-auto px-4">
         <div className="max-w-2xl mx-auto text-center mb-12">
           <h1 className="text-4xl font-bold mb-4">Our Prices</h1>
-          <p className="text-gray-600">
-            Transparent pricing for all your transportation needs
-          </p>
+          <p className="text-gray-600">Transparent pricing for all your transportation needs</p>
         </div>
 
         <div className="max-w-4xl mx-auto">
@@ -88,15 +59,11 @@ export default function Prices() {
                           {DESTINATIONS.map((to) => (
                             <TableCell key={to}>
                               {from === to ? (
-                                "-"
+                                '-'
                               ) : prices[from]?.[to] ? (
-                                <span className="font-medium">
-                                  ₪{prices[from][to]}
-                                </span>
+                                <span className="font-medium">₪{prices[from][to]}</span>
                               ) : (
-                                <span className="text-gray-400">
-                                  On request
-                                </span>
+                                <span className="text-gray-400">On request</span>
                               )}
                             </TableCell>
                           ))}
@@ -110,9 +77,7 @@ export default function Prices() {
           </Tabs>
 
           <div className="mt-8 p-6 bg-gray-50 rounded-lg">
-            <h3 className="text-lg font-semibold mb-4">
-              Additional Information
-            </h3>
+            <h3 className="text-lg font-semibold mb-4">Additional Information</h3>
             <ul className="space-y-2 text-gray-600">
               <li>• Prices are in Israeli Shekels (₪)</li>
               <li>• Rates include VAT</li>
