@@ -1,10 +1,10 @@
-import React from "react";
-import { MapPin, Shield, Clock } from "lucide-react";
-import OrderModal from "../orders/order-modal";
-import { Button } from "@/components/ui/button";
+import { useState } from 'react';
+import { MapPin, Shield, Clock } from 'lucide-react';
+import OrderModal from '../orders/order-modal';
+import { Button } from '@/components/ui/button';
 
 export default function Home() {
-  const [showOrderModal, setShowOrderModal] = React.useState(false);
+  const [showOrderModal, setShowOrderModal] = useState(false);
 
   return (
     <div>
@@ -24,8 +24,8 @@ export default function Home() {
               Premium Transportation Across Israel
             </h1>
             <p className="text-xl text-white/90 mb-8">
-              Experience comfort and reliability with our premium transfer
-              service. From Ben Gurion Airport to any destination in Israel.
+              Experience comfort and reliability with our premium transfer service. From Ben Gurion
+              Airport to any destination in Israel.
             </p>
             <Button
               onClick={() => setShowOrderModal(true)}
@@ -46,27 +46,21 @@ export default function Home() {
                 <MapPin className="w-8 h-8 text-blue-600" />
               </div>
               <h3 className="text-xl font-semibold mb-4">Any Destination</h3>
-              <p className="text-gray-600">
-                Travel to any point in Israel with comfort and style
-              </p>
+              <p className="text-gray-600">Travel to any point in Israel with comfort and style</p>
             </div>
             <div className="text-center">
               <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-blue-100 flex items-center justify-center">
                 <Shield className="w-8 h-8 text-blue-600" />
               </div>
               <h3 className="text-xl font-semibold mb-4">Safe & Reliable</h3>
-              <p className="text-gray-600">
-                Professional drivers and well-maintained vehicles
-              </p>
+              <p className="text-gray-600">Professional drivers and well-maintained vehicles</p>
             </div>
             <div className="text-center">
               <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-blue-100 flex items-center justify-center">
                 <Clock className="w-8 h-8 text-blue-600" />
               </div>
               <h3 className="text-xl font-semibold mb-4">24/7 Service</h3>
-              <p className="text-gray-600">
-                Available round the clock for your convenience
-              </p>
+              <p className="text-gray-600">Available round the clock for your convenience</p>
             </div>
           </div>
         </div>
@@ -77,10 +71,9 @@ export default function Home() {
           <div className="max-w-3xl mx-auto text-center">
             <h2 className="text-3xl font-bold mb-4">Why Choose Us?</h2>
             <p className="text-gray-600 mb-8">
-              We provide premium transportation services with a focus on
-              comfort, reliability, and customer satisfaction. Our fleet of
-              luxury vehicles and professional drivers ensure a seamless travel
-              experience.
+              We provide premium transportation services with a focus on comfort, reliability, and
+              customer satisfaction. Our fleet of luxury vehicles and professional drivers ensure a
+              seamless travel experience.
             </p>
             <Button
               onClick={() => setShowOrderModal(true)}
@@ -92,10 +85,7 @@ export default function Home() {
         </div>
       </section>
 
-      <OrderModal
-        open={showOrderModal}
-        onClose={() => setShowOrderModal(false)}
-      />
+      <OrderModal open={showOrderModal} onClose={() => setShowOrderModal(false)} />
     </div>
   );
 }

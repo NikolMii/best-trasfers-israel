@@ -12,6 +12,7 @@ export interface Car {
   class: VehicleClass;
   year: number;
   name: string;
+  pax: number
   images: string[];
 }
 

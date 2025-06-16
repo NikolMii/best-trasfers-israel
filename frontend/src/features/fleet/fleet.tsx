@@ -1,55 +1,15 @@
-import React from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Card, CardContent } from '@/components/ui/card';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
-import { Users, Fuel, Calendar } from "lucide-react";
-import { Car } from "../orders/types";
-
-const FLEET: Car[] = [
-  {
-    id: "1",
-    name: "Mercedes-Benz S-Class",
-    class: "Luxury",
-    capacity: 3,
-    year: 2023,
-    images: [
-      "https://images.unsplash.com/photo-1622037022288-861c8c3c4ddf?auto=format&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1583121274602-3e2820c69888?auto=format&fit=crop&q=80",
-    ],
-  },
-  {
-    id: "2",
-    name: "Mercedes-Benz V-Class",
-    class: "Premium",
-    capacity: 7,
-    year: 2023,
-    images: [
-      "https://images.unsplash.com/photo-1559416523-140ddc3d238c?auto=format&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1570733117311-d990c3816c47?auto=format&fit=crop&q=80",
-    ],
-  },
-  {
-    id: "3",
-    name: "BMW 7 Series",
-    class: "Luxury",
-    capacity: 3,
-    year: 2023,
-    images: [
-      "https://images.unsplash.com/photo-1523983388277-336a66bf9bcd?auto=format&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1556189250-72ba954cfc2b?auto=format&fit=crop&q=80",
-    ],
-  },
-];
+import { Users, Fuel, Calendar } from 'lucide-react';
+import { useState } from 'react';
+import { Car } from '../orders/types';
+import { useFleet } from './useFleet';
 
 export default function Fleet() {
-  const [selectedCar, setSelectedCar] = React.useState<Car>({} as Car);
-  const [isOpen, setIsOpen] = React.useState<boolean>(false);
-
+  const [selectedCar, setSelectedCar] = useState<Car>({} as Car);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const fleet = useFleet();
   return (
     <div className="py-12">
       <div className="container mx-auto px-4">
@@ -61,7 +21,7 @@ export default function Fleet() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {FLEET.map((car) => (
+          {fleet.map((car) => (
             <Card
               key={car.id}
               className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
@@ -111,11 +71,8 @@ export default function Fleet() {
             </DialogHeader>
             <div className="mt-4">
               <div className="grid grid-cols-2 gap-4">
-                {selectedCar?.images?.map((image, index) => (
-                  <div
-                    key={index}
-                    className="aspect-[16/9] overflow-hidden rounded-lg"
-                  >
+                {(selectedCar as Car)?.images?.map((image, index) => (
+                  <div key={index} className="aspect-[16/9] overflow-hidden rounded-lg">
                     <img
                       src={image}
                       alt={`${selectedCar.name} - View ${index + 1}`}
@@ -127,9 +84,7 @@ export default function Fleet() {
               <div className="mt-6 grid grid-cols-3 gap-4">
                 <div className="text-center">
                   <Users className="w-6 h-6 mx-auto mb-2" />
-                  <p className="font-medium">
-                    {selectedCar?.capacity} Passengers
-                  </p>
+                  <p className="font-medium">{selectedCar?.capacity} Passengers</p>
                 </div>
                 <div className="text-center">
                   <Fuel className="w-6 h-6 mx-auto mb-2" />

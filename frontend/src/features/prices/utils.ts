@@ -1,14 +1,9 @@
-import { PricesTable } from './prices-page';
-import Papa from 'papaparse';
+import { Price } from './prices-page';
 import axios from 'axios';
 
-export function getPrices(): Promise<PricesTable> {
+export function getPrices(): Promise<Price[]> {
   return axios
-    .get('/prices.csv')
-    .then((res) => res.data())
-    .then((csvText) => {
-      const parsed = Papa.parse(csvText, { header: true });
-      return parsed.data;
-    })
-    .catch((err) => console.error('Error loading CSV:', err));
+    .get('/prices')
+    .then((res) => res.data)
+    .catch((err) => console.error('Error loading prices:', err));
 }

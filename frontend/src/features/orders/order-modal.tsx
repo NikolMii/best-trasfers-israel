@@ -24,8 +24,10 @@ import {
 } from '@/components/ui/form';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { PRICES, phoneRegex, DESTINATIONS, CLASSES, COMPANY_CONFIG } from './consts';
+import { phoneRegex, CLASSES, COMPANY_CONFIG } from './consts';
 import styles from './styles.module.css';
+import { usePrices } from '../prices/usePrices';
+import { Price } from '../prices/prices-page';
 
 export interface Props {
   open: boolean;
@@ -34,6 +36,7 @@ export interface Props {
 
 export default function OrderModal({ open, onClose }: Props) {
   const [loading, setLoading] = useState(false);
+  const { getPrice, destinations } = usePrices();
 
   const [price, setPrice] = useState<null | number>(null);
   const [showSuccess, setShowSuccess] = useState(false);
@@ -45,11 +48,19 @@ export default function OrderModal({ open, onClose }: Props) {
     email: z.string().email('email must be valid'),
     phone: z.string().regex(phoneRegex, 'phone number must be valid'),
     from: z.union([
-      z.enum(DESTINATIONS),
+      z.string().refine((val) => destinations.includes(val), {
+        message: 'Invalid value',
+      }),
       z.string().min(2, 'from place be at least 2 characters.'),
     ]),
-    to: z.union([z.enum(DESTINATIONS), z.string().min(2, 'from place be at least 2 characters.')]),
+    to: z.union([
+      z.string().refine((val) => destinations.includes(val), {
+        message: 'Invalid value',
+      }),
+      z.string().min(2, 'from place be at least 2 characters.'),
+    ]),
     class: z.enum(CLASSES),
+    pax: z.coerce.number().int().positive('pax must be > 0'),
     date: z.date(),
   });
 
@@ -60,8 +71,10 @@ export default function OrderModal({ open, onClose }: Props) {
   const updatePrice = useCallback(() => {
     const { from, to, class: carClass } = form.getValues();
     if (!from || !to || !carClass) return null;
-    setPrice(PRICES[carClass]?.[from]?.[to]);
-  }, [form]);
+    console.log(from, to, getPrice({ from, to }), carClass);
+
+    setPrice((getPrice({ from, to })?.[carClass.toLowerCase() as keyof Price] as number) ?? null);
+  }, [form, getPrice]);
 
   async function onSubmit(formData: z.infer<typeof FormSchema>) {
     try {
@@ -86,6 +99,7 @@ export default function OrderModal({ open, onClose }: Props) {
           From: ${formData.from}
           To: ${formData.to}
           Class: ${formData.class}
+          Pax: ${formData.pax}
           Date: ${format(formData.date, 'PPP')}
           ${price ? `Price: ₪${price}` : 'Price: Get an offer'}
         `,
@@ -102,6 +116,7 @@ export default function OrderModal({ open, onClose }: Props) {
             From: ${formData.from}
             To: ${formData.to}
             Class: ${formData.class}
+            Pax: ${formData.pax}
             Date: ${format(formData.date, 'PPP')}
             ${price ? `Price: ₪${price}` : 'We will contact you with a personalized offer'}
   
@@ -148,14 +163,14 @@ export default function OrderModal({ open, onClose }: Props) {
   }
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent>
+      <DialogContent className={styles.dialog}>
         <DialogHeader>
           <DialogTitle>Book Your Transfer</DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
-            onChange={updatePrice}
+            onChange={() => updatePrice()}
             className={styles.formGrid}
           >
             <FormField
@@ -198,71 +213,113 @@ export default function OrderModal({ open, onClose }: Props) {
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name="to"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>To</FormLabel>
-                  <FormControl>
-                    <div>
-                      <Input list="destinations" {...field} />
-                      <datalist id="destinations">
-                        {DESTINATIONS.map((opt) => (
-                          <option key={opt} value={opt} />
+            <div className={styles.cell}>
+              <FormField
+                control={form.control}
+                name="class"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Car Class</FormLabel>
+                    <Select
+                      onValueChange={(e) => {
+                        field.onChange(e);
+                        updatePrice();
+                      }}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {CLASSES.map((carClass) => (
+                          <SelectItem value={carClass}>{carClass}</SelectItem>
                         ))}
-                      </datalist>
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                      </SelectContent>
+                    </Select>
 
-            <FormField
-              control={form.control}
-              name="from"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>From</FormLabel>
-                  <FormControl>
-                    <div>
-                      <Input list="destinations" {...field} />
-                      <datalist id="destinations">
-                        {DESTINATIONS.map((opt) => (
-                          <option key={opt} value={opt} />
-                        ))}
-                      </datalist>
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <FormField
-              control={form.control}
-              name="class"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Car Class</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <FormField
+                control={form.control}
+                name="pax"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Number of Passangers</FormLabel>
                     <FormControl>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
+                      <Input {...field} />
                     </FormControl>
-                    <SelectContent>
-                      {CLASSES.map((carClass) => (
-                        <SelectItem value={carClass}>{carClass}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            <div className={styles.cell}>
+              <FormField
+                control={form.control}
+                name="to"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>To</FormLabel>
+                    <FormControl>
+                      <div>
+                        <Input list="destinations" {...field} />
+                        <datalist id="destinations">
+                          {destinations.map((opt) => (
+                            <option key={opt} value={opt} />
+                          ))}
+                        </datalist>
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-                  <FormMessage />
-                </FormItem>
+              <FormField
+                control={form.control}
+                name="from"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>From</FormLabel>
+                    <FormControl>
+                      <div>
+                        <Input list="destinations" {...field} />
+                        <datalist id="destinations">
+                          {destinations.map((opt) => (
+                            <option key={opt} value={opt} />
+                          ))}
+                        </datalist>
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <div className={styles.cell}>
+              {price !== null && price !== undefined ? (
+                <div className={styles.priceBoxFixed}>
+                  <p className={styles.priceLabelFixed}>Fixed Price Available</p>
+                  <p className={styles.priceValue}>₪{price}</p>
+                </div>
+              ) : (
+                <div>
+                  <p>Custom Route</p>
+                  <p>Get an Offer</p>
+                </div>
               )}
-            />
+
+              <Button type="submit" disabled={loading}>
+                {loading ? 'Sending...' : 'Book Transfer'}
+              </Button>
+            </div>
+
             <FormField
               control={form.control}
               name="date"
@@ -284,22 +341,6 @@ export default function OrderModal({ open, onClose }: Props) {
                 </FormItem>
               )}
             />
-
-            {price !== null && price !== undefined ? (
-              <div className={styles.priceBoxFixed}>
-                <p className={styles.priceLabelFixed}>Fixed Price Available</p>
-                <p className={styles.priceValue}>₪{price}</p>
-              </div>
-            ) : (
-              <div>
-                <p>Custom Route</p>
-                <p>Get an Offer</p>
-              </div>
-            )}
-
-            <Button type="submit" disabled={loading}>
-              {loading ? 'Sending...' : 'Book Transfer'}
-            </Button>
           </form>
         </Form>
       </DialogContent>

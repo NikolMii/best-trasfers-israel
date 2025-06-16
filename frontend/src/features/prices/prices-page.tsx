@@ -7,20 +7,20 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { VehicleClass } from '../orders/types';
-import prices from '../../assets/prices.json';
-import { useEffect, useState } from 'react';
-import { getPrices } from './utils';
+import { usePrices } from './usePrices';
+import { CLASSES } from '../orders/consts';
 
-export type PricesTable = Record<VehicleClass, Record<string, Record<string, number>>>;
-const PRICES: PricesTable = prices;
+export interface Price {
+  to: string;
+  from: string;
+  price: number;
+  premium: number;
+  luxury: number;
+  standart: number;
+}
 
 export default function Prices() {
-  const [tableData, setTableData] = useState([]);
-
-  useEffect(() => {
-    getPrices().then((table) => setTableData(table));
-  }, []);
+  const { prices, getPrice, destinations } = usePrices();
 
   return (
     <div className="py-12">
@@ -33,35 +33,38 @@ export default function Prices() {
         <div className="max-w-4xl mx-auto">
           <Tabs defaultValue="Luxury" className="w-full">
             <TabsList className="mb-8">
-              {Object.keys(PRICES).map((classType) => (
+              {CLASSES.map((classType) => (
                 <TabsTrigger key={classType} value={classType}>
                   {classType}
                 </TabsTrigger>
               ))}
             </TabsList>
 
-            {Object.entries(PRICES).map(([classType, prices]) => (
+            {CLASSES.map((classType) => (
               <TabsContent key={classType} value={classType}>
                 <div className="rounded-lg border bg-white">
                   <Table>
                     <TableHeader>
                       <TableRow>
                         <TableHead>From / To</TableHead>
-                        {DESTINATIONS.map((dest) => (
+                        {destinations.map((dest) => (
                           <TableHead key={dest}>{dest}</TableHead>
                         ))}
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {DESTINATIONS.map((from) => (
+                      {destinations.map((from) => (
                         <TableRow key={from}>
                           <TableCell className="font-medium">{from}</TableCell>
-                          {DESTINATIONS.map((to) => (
+                          {destinations.map((to) => (
                             <TableCell key={to}>
                               {from === to ? (
                                 '-'
-                              ) : prices[from]?.[to] ? (
-                                <span className="font-medium">₪{prices[from][to]}</span>
+                              ) : getPrice({ from, to }) ? (
+                                <span className="font-medium">
+                                  ₪
+                                  {getPrice({ from, to })?.[classType.toLowerCase() as keyof Price]}
+                                </span>
                               ) : (
                                 <span className="text-gray-400">On request</span>
                               )}
