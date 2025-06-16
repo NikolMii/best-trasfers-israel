@@ -12,7 +12,7 @@ dotenv.config();
 const app = express();
 app.use(express.json());
 
-app.get("/cars", async (req, res) => {
+app.get("/api/cars", async (req, res) => {
   try {
     const cars = await getTableJson(carsFilePath);
     res.status(200).send(cars);
@@ -22,7 +22,7 @@ app.get("/cars", async (req, res) => {
   }
 });
 
-app.get("/prices", async (req, res) => {
+app.get("/api/prices", async (req, res) => {
   try {
     const prices = await getTableJson(pricesFilePath);
     res.status(200).send(prices);
@@ -34,7 +34,7 @@ app.get("/prices", async (req, res) => {
   }
 });
 
-app.post("/send-email", async (req, res) => {
+app.post("/api/send-email", async (req, res) => {
   const { to, subject, text } = req.body;
 
   try {

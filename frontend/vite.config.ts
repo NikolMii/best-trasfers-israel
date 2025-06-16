@@ -8,9 +8,7 @@ export default defineConfig({
   plugins: [react(), tailwindcss()],
   server: {
     proxy: {
-      '/send-email': 'http://localhost:3001',
-      '/prices': 'http://localhost:3001',
-      '/cars': 'http://localhost:3001',
+      '/api': 'http://localhost:3001',
     },
   },
   resolve: {

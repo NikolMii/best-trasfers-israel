@@ -46,7 +46,7 @@ export default function Layout() {
                   <NavigationMenuContent>
                     <NavigationMenuLink href="/">Home</NavigationMenuLink>
                     <NavigationMenuLink href="/fleet">Fleet</NavigationMenuLink>
-                    <NavigationMenuLink href="/tablePrices">Prices</NavigationMenuLink>
+                    <NavigationMenuLink href="/prices">Prices</NavigationMenuLink>
                   </NavigationMenuContent>
                 </NavigationMenuItem>
               </NavigationMenuList>
@@ -58,7 +58,7 @@ export default function Layout() {
       <main className="flex-1">
         <Routes>
           <Route path="/" element={<HomePage />} />
-          <Route path="/tablePrices" element={<PricesPage />} />
+          <Route path="/prices" element={<PricesPage />} />
           <Route path="/fleet" element={<FleetPage />} />
         </Routes>
       </main>

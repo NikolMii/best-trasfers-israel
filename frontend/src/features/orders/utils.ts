@@ -3,7 +3,7 @@ import { Email } from './types';
 
 export function sendEmail({ subject, text, to }: Email) {
   axios
-    .post('/send-email', {
+    .post('/api/send-email', {
       to,
       subject,
       text,

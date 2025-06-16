@@ -3,7 +3,7 @@ import { Car } from '../orders/types';
 
 export function getCars(): Promise<Car[]> {
   return axios
-    .get('/cars')
+    .get('/api/cars')
     .then((res) => res.data)
     .catch((err) => console.error('Error loading prices:', err));
 }

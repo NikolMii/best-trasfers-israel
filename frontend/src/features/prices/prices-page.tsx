@@ -20,7 +20,7 @@ export interface Price {
 }
 
 export default function Prices() {
-  const { prices, getPrice, destinations } = usePrices();
+  const { getPrice, destinations } = usePrices();
 
   return (
     <div className="py-12">
