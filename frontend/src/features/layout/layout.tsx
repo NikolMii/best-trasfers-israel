@@ -25,7 +25,7 @@ export default function Layout() {
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
           <div className="flex items-center gap-6">
             <Link to={'/'} className="flex items-center gap-2">
-              <img src="../public/logo.png" className="h-8 w-8 text-blue-600" />
+              <img src="/logo.jpg" className="h-16 w-16 text-blue-600" />
               <span className="font-semibold text-xl tracking-tight">Best Transfers Israel</span>
             </Link>
           </div>

@@ -2,7 +2,8 @@ server {
   listen 80;
   server_name localhost;
 
-  root /usr/share/nginx/html;
+  # root /usr/share/nginx/html;
+  root /var/www/my-vite-app/dist;
   index index.html;
 
   # Serve frontend routes (SPA)
@@ -19,6 +20,11 @@ server {
     proxy_set_header Host $host;
     proxy_cache_bypass $http_upgrade;
   }
+
+    # Serve static images
+    location /cars/ {
+        alias /var/www/my-vite-app/public/cars/;
+    }
 
   location ~* \.(?:ico|css|js|gif|jpe?g|png|woff2?|ttf|svg|eot)$ {
     expires 6M;
